@@ -32,9 +32,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.gamecrawl.navigationdrawer.ui.theme.NavigationDrawerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,29 +70,26 @@ fun MainScreen() {
 @Composable
 fun Navigation(navController: NavHostController) {
     NavHost(navController, startDestination = NavigationItem.Home.route) {
+
         composable(NavigationItem.Home.route) {
-            HomeScreen()
+            HomeScreen(navController = navController)
         }
-
-
         composable(NavigationItem.Profile.route) {
             ProfileScreen()
         }
-
-        composable(NavigationItem.Settings.route) {
-            SettingsScreen()
+        navigation(
+            route = NavigationItem.Nested.route,
+            startDestination = NavigationItem.Home.route
+        ) {
+            composable(NavigationItem.Details.route) {
+                DetailsScreen(navController = navController)
+            }
         }
 
-        composable(NavigationItem.Share.route) {
-            ShareScreen()
-        }
-
-        composable(NavigationItem.Contact.route) {
-            ContactScreen()
-        }
     }
 
 }
+
 
 
 @Composable
@@ -117,9 +116,7 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
     val items = listOf(
         NavigationItem.Home,
         NavigationItem.Profile,
-        NavigationItem.Settings,
-        NavigationItem.Share,
-        NavigationItem.Contact
+
     )
 
     Column(modifier = Modifier.background(color = Color.White)) {
@@ -194,7 +191,7 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
             .padding(10.dp)
     ) {
         Image(
-            painter = painterResource(id = item.icon),
+            painter = painterResource(id = item.icon ?: R.drawable.ic_home),
             contentDescription = item.title,
             colorFilter = ColorFilter.tint(color = Color.Green),
             contentScale = ContentScale.Fit,
@@ -211,20 +208,35 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
 }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Home Screen",
-            fontWeight = FontWeight.Bold,
-            color = Color.Blue,
-            fontSize = 30.sp,
-            textAlign = TextAlign.Center
-        )
+        Button(onClick = {
+            navController.navigate(NavigationItem.Details.route)
+        }){
+            Text(text = "Home Screen")
+        }
 
+    }
+}
+
+
+@Composable
+fun DetailsScreen(navController: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(onClick = {
+            navController.navigateUp()
+        }) {
+            Text(text = "Details Screen")
+        }
     }
 }
 
@@ -237,59 +249,6 @@ fun ProfileScreen() {
     ) {
         Text(
             text = "Profile Screen",
-            fontWeight = FontWeight.Bold,
-            color = Color.Blue,
-            fontSize = 30.sp,
-            textAlign = TextAlign.Center
-        )
-
-    }
-}
-
-@Composable
-fun SettingsScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Settings Screen",
-            fontWeight = FontWeight.Bold,
-            color = Color.Blue,
-            fontSize = 30.sp,
-            textAlign = TextAlign.Center
-        )
-
-    }
-}
-@Composable
-fun ShareScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Share Screen",
-            fontWeight = FontWeight.Bold,
-            color = Color.Blue,
-            fontSize = 30.sp,
-            textAlign = TextAlign.Center
-        )
-
-    }
-}
-
-@Composable
-fun ContactScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Contact Screen",
             fontWeight = FontWeight.Bold,
             color = Color.Blue,
             fontSize = 30.sp,
